@@ -1,29 +1,29 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.c                                             :+:      :+:    :+:   */
+/*   ft_strsrchi.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jcharloi <jcharloi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2016/12/22 15:59:45 by jcharloi          #+#    #+#             */
-/*   Updated: 2017/01/05 11:12:01 by jcharloi         ###   ########.fr       */
+/*   Created: 2017/01/05 15:41:33 by jcharloi          #+#    #+#             */
+/*   Updated: 2017/01/06 11:09:24 by jcharloi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "Libft/libft.h"
-#include "get_next_line.h"
-#include <stdio.h>
+#include "libft.h"
 
-int main(int argc, char **argv)
+int		ft_strsrchi(const char *s, int c)
 {
-	int fd;
-	char *str;
-
-	fd = open(argv[1], O_RDONLY);
-	while (get_next_line(fd, &str))
+	unsigned char	*ptr_s;
+	int				i;
+	
+	ptr_s = (unsigned char*)s;
+	i = 0;
+	while (ptr_s[i] != '\0')
 	{
-		ft_putendl(str);
-		ft_memdel((void**)&str);
+		if (ptr_s[i] == c)
+			return (i);
+		i++;
 	}
-	return (0);
+	return (-1);
 }

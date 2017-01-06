@@ -6,7 +6,7 @@
 /*   By: jcharloi <jcharloi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/11/10 17:09:11 by jcharloi          #+#    #+#             */
-/*   Updated: 2016/12/14 12:38:01 by jcharloi         ###   ########.fr       */
+/*   Updated: 2017/01/05 16:29:29 by jcharloi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,5 +88,6 @@ t_list				*ft_lstmap(t_list *lst, t_list *(*f)(t_list *elem));
 
 int					ft_sqrt(int nb);
 void				ft_tabdel(void	***tab);
+int					ft_strsrchi(const char *s, int c);
 
 #endif
