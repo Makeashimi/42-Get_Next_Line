@@ -1,29 +1,29 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_strsrchi.c                                      :+:      :+:    :+:   */
+/*   ft_strjoin.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jcharloi <jcharloi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2017/01/05 15:41:33 by jcharloi          #+#    #+#             */
-/*   Updated: 2017/01/06 11:09:24 by jcharloi         ###   ########.fr       */
+/*   Created: 2016/11/21 11:40:48 by jcharloi          #+#    #+#             */
+/*   Updated: 2016/12/05 13:07:00 by jcharloi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-int		ft_strsrchi(const char *s, int c)
+char	*ft_strjoin(char const *s1, char const *s2)
 {
-	unsigned char	*ptr_s;
-	int				i;
-	
-	ptr_s = (unsigned char*)s;
-	i = 0;
-	while (ptr_s[i] != '\0')
-	{
-		if (ptr_s[i] == c)
-			return (i);
-		i++;
-	}
-	return (-1);
+	char	*fraiche;
+	int		len;
+
+	if (s1 == NULL || s2 == NULL)
+		return (NULL);
+	len = ft_strlen(s1) + ft_strlen(s2);
+	fraiche = (char*)malloc(sizeof(char) * (len + 1));
+	if (fraiche == NULL)
+		return (NULL);
+	ft_strcpy(fraiche, s1);
+	ft_strcat(fraiche, s2);
+	return (fraiche);
 }
