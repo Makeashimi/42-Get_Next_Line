@@ -14,14 +14,18 @@
 #include "get_next_line.h"
 #include <stdio.h>
 
-int main(int argc, char **argv)
+int		main(int argc, char **argv)
 {
-	int fd;
-	char *str;
+	int		fd;
+	int		ret;
+	char	*str;
 
 	fd = open(argv[1], O_RDONLY);
-	while (get_next_line(fd, &str))
+	while ((ret = get_next_line(fd, &str)) > 0)
 	{
+		ft_putstr("ret : ");
+		ft_putnbr(ret);
+		ft_putstr(", line : ");
 		ft_putendl(str);
 		ft_memdel((void**)&str);
 	}

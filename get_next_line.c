@@ -13,45 +13,57 @@
 #include "get_next_line.h"
 #include <stdio.h>
 
-int		get_next_line(const int fd, char **line)
+int		read_buffer(int fd, char **result, char **remain)
 {
-	int				ret;/*Stocker le nombre d'octets de read*/
-	char			buf[BUFF_SIZE + 1];/*Le contenu du fichier*/
-	int				i;/*Parcourir le buf*/
-	char			*result;/*Le resultat du buf lu + le reste*/
 	char			*result2;
-	static	char	*reste = NULL;/*Le reste du fichier apres le \n*/
-	
+	char			buf[BUFF_SIZE + 1];
+	int				ret;
+
 	ret = 1;
-	if (reste == NULL)
-		result = ft_strnew(0);
-	else
-		result = ft_strdup(reste);
-	//printf("reste : %s\n", reste);
-	while (ft_strsrchi(result, '\n') == -1 && ret)
+	while (ft_strsrchi(*result, '\n') == -1 && ret)
 	{
-		result2 = result;
+		result2 = *result;
 		ret = read(fd, buf, BUFF_SIZE);
-		//printf("ret : %d\n", ret);
 		if (ret == -1)
 			return (-1);
 		buf[ret] = '\0';
-		result = ft_strjoin(result2, buf);
-		//printf("result : %s|\n", result);
+		*result = ft_strjoin(result2, buf);
 		ft_strdel((char**)&result2);
 	}
-	i = 0;
-	//printf("resultt : %s\n", result);
-	while (result[i] != '\0' && result[i] != '\n')
-		i++;
-	*line = ft_strsub(result, 0, i);
-	//printf("line : %s\n", *line);
-	//printf("ret : %d\n", ret);	
-	if (ret == 0 && result[0] == '\0')
-			return (0);
-	if (result[i] == '\n')
-		reste = ft_strdup(&result[i + 1]);/*i + 1 = l'index / &i + 1 = pointeur commencant a i+1 pour continuer la chaine*/
-	else
-		reste = NULL/*ft_strdup(result)*/;
+	if (ret == 0 && *result[0] == 0)
+	{
+		ft_strdel((char**)remain);
+		ft_strdel((char**)result);
+		return (0);
+	}
+	return (1);
+}
+
+/*
+** stock = Contain the return value of read_buffer AND browse result.
+** result = Result of buf and remain.
+** remain = Remain of the file after the \n.
+** stock + 1 = index / &ret + 1 = pointer starting at ret+1 to keep the string.
+*/
+
+int		get_next_line(const int fd, char **line)
+{
+	int				stock;
+	char			*result;
+	static char		*remain = NULL;
+
+	result = (remain == NULL) ? ft_strnew(0) : ft_strdup(remain);
+	ft_strdel((char**)&remain);
+	if ((stock = read_buffer(fd, &result, &remain)) == -1)
+		return (-1);
+	if (stock == 0)
+		return (0);
+	stock = 0;
+	while (result[stock] != '\0' && result[stock] != '\n')
+		stock++;
+	*line = ft_strsub(result, 0, stock);
+	if (result[stock] == '\n')
+		remain = ft_strdup(&result[stock + 1]);
+	ft_strdel((char**)&result);
 	return (1);
 }
