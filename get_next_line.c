@@ -13,7 +13,7 @@
 #include "get_next_line.h"
 #include <stdio.h>
 
-int		read_buffer(int fd, char **result, char **remain)
+int		read_buffer(int fd, char **result)
 {
 	char			*result2;
 	char			buf[BUFF_SIZE + 1];
@@ -32,38 +32,60 @@ int		read_buffer(int fd, char **result, char **remain)
 	}
 	if (ret == 0 && *result[0] == 0)
 	{
-		ft_strdel((char**)remain);
 		ft_strdel((char**)result);
 		return (0);
 	}
 	return (1);
 }
 
+t_gnl	*createstruct(int fd)
+{
+	t_gnl	*gnl;
+	
+	gnl = (t_gnl*)malloc(sizeof(t_gnl));
+	gnl->fd = fd;
+	gnl->remain = NULL;
+
+	return (gnl);  	
+}
+
 /*
 ** stock = Contain the return value of read_buffer AND browse result.
-** result = Result of buf and remain.
-** remain = Remain of the file after the \n.
+** result = Result of buf and tmp->content->remain.
+** tmp->content->remain = Remain of the file after the \n from the content of 
+** my list.
 ** stock + 1 = index / &ret + 1 = pointer starting at ret+1 to keep the string.
+** sizeof(t_gnl) = int + char * = 12.
 */
 
 int		get_next_line(const int fd, char **line)
 {
 	int				stock;
 	char			*result;
-	static char		*remain = NULL;
+	static t_list	*list = NULL;
+	t_list			*tmp;
 
-	result = (remain == NULL) ? ft_strnew(0) : ft_strdup(remain);
-	ft_strdel((char**)&remain);
-	if ((stock = read_buffer(fd, &result, &remain)) == -1)
-		return (-1);
-	if (stock == 0)
-		return (0);
+	tmp = list;
+	while (tmp != NULL && fd != ((t_gnl*)(tmp->content))->fd)
+		tmp = tmp->next;
+	if (tmp == NULL)
+	{
+		ft_lstadd(&list, ft_lstnew(createstruct(fd), sizeof(t_gnl)));
+		tmp = list;
+	}
+	result = (((t_gnl*)(tmp->content))->remain == NULL) ? ft_strnew(0) :
+			ft_strdup(((t_gnl*)(tmp->content))->remain);
+	ft_strdel((char**)&((t_gnl*)(tmp->content))->remain);
+	if ((stock = read_buffer(fd, &result)) != 1)
+	{
+		return (stock);
+	}
 	stock = 0;
 	while (result[stock] != '\0' && result[stock] != '\n')
 		stock++;
 	*line = ft_strsub(result, 0, stock);
 	if (result[stock] == '\n')
-		remain = ft_strdup(&result[stock + 1]);
+		((t_gnl*)(tmp->content))->remain = ft_strdup(&result[stock + 1]);
 	ft_strdel((char**)&result);
 	return (1);
 }
