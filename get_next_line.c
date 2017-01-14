@@ -46,7 +46,7 @@ t_gnl	*createstruct(int fd)
 	gnl->fd = fd;
 	gnl->remain = NULL;
 
-	return (gnl);  	
+	return (gnl);
 }
 
 /*
@@ -78,6 +78,8 @@ int		get_next_line(const int fd, char **line)
 	ft_strdel((char**)&((t_gnl*)(tmp->content))->remain);
 	if ((stock = read_buffer(fd, &result)) != 1)
 	{
+		free(&(tmp->content));
+		free(&tmp);
 		return (stock);
 	}
 	stock = 0;
