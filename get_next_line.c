@@ -64,6 +64,7 @@ int		get_next_line(const int fd, char **line)
 	char			*result;
 	static t_list	*list = NULL;
 	t_list			*tmp;
+	t_list			*tmp2;
 
 	tmp = list;
 	while (tmp != NULL && fd != ((t_gnl*)(tmp->content))->fd)
@@ -78,8 +79,14 @@ int		get_next_line(const int fd, char **line)
 	ft_strdel((char**)&((t_gnl*)(tmp->content))->remain);
 	if ((stock = read_buffer(fd, &result)) != 1)
 	{
-		free(&(tmp->content));
-		free(&tmp);
+		tmp2 = list;
+		while (tmp2 != tmp && tmp != tmp2->next)
+			tmp2 = tmp2->next;
+		tmp2->next = tmp->next;
+		ft_memdel((void**)(&(tmp->content)));
+		if (tmp2 == tmp)
+			list = NULL;
+		ft_memdel((void**)(&tmp));
 		return (stock);
 	}
 	stock = 0;
