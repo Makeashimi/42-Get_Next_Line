@@ -47,10 +47,10 @@ char	**backremain(int fd, t_list **tmp, t_list **list)
 		*tmp = (*tmp)->next;
 	if (*tmp == NULL)
 	{
-		gnl = (t_gnl*)malloc(sizeof(t_gnl));
 		link = ft_lstnew(&gnl, sizeof(t_gnl));
 		ft_lstadd(list, link);
 		*tmp = *list;
+		(*tmp)->content = (t_gnl*)malloc(sizeof(t_gnl));
 		(((t_gnl *)((*tmp)->content))->fd) = fd;
 		(((t_gnl *)((*tmp)->content))->remain) = NULL;
 	}
@@ -67,6 +67,7 @@ void	free_list(t_list **tmp, t_list **list)
 	tmp2->next = (*tmp)->next;
 	if (tmp2 == *tmp)
 		*list = (*tmp)->next;
+	ft_memdel((void**)(&(((t_gnl*)(*tmp)->content))->remain));
 	ft_memdel((void**)(&((*tmp)->content)));
 	ft_memdel((void**)(tmp));
 }
