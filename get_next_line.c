@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include "get_next_line.h"
+#include <stdio.h>
 
 int		read_buffer(int fd, char **result)
 {
@@ -68,7 +69,9 @@ void	free_list(t_list **tmp, t_list **list)
 	if (tmp2 == *tmp)
 		*list = (*tmp)->next;
 	ft_memdel((void**)(&(((t_gnl*)(*tmp)->content))->remain));
+	(((t_gnl*)(*tmp)->content))->remain = NULL;
 	ft_memdel((void**)(&((*tmp)->content)));
+	(*tmp)->content = NULL;
 	ft_memdel((void**)(tmp));
 }
 
@@ -94,7 +97,11 @@ int		get_next_line(const int fd, char **line)
 	ft_strdel((char**)remain);
 	if ((stock = read_buffer(fd, &result)) != 1)
 	{
+		//printf("tmp : %p\n", tmp);
+		//printf("list : %p\n", list);
 		free_list(&tmp, &list);
+		//printf("tmpp : %p\n", tmp);
+		//printf("listt %p\n", list);
 		return (stock);
 	}
 	stock = 0;
