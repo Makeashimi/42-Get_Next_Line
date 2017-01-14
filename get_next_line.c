@@ -41,7 +41,7 @@ int		read_buffer(int fd, char **result)
 t_gnl	*createstruct(int fd)
 {
 	t_gnl	*gnl;
-	
+
 	gnl = (t_gnl*)malloc(sizeof(t_gnl));
 	gnl->fd = fd;
 	gnl->remain = NULL;
@@ -52,7 +52,7 @@ t_gnl	*createstruct(int fd)
 /*
 ** stock = Contain the return value of read_buffer AND browse result.
 ** result = Result of buf and tmp->content->remain.
-** tmp->content->remain = Remain of the file after the \n from the content of 
+** tmp->content->remain = Remain of the file after the \n from the content of
 ** my list.
 ** stock + 1 = index / &ret + 1 = pointer starting at ret+1 to keep the string.
 ** sizeof(t_gnl) = int + char * = 12.
@@ -66,6 +66,7 @@ int		get_next_line(const int fd, char **line)
 	t_list			*tmp;
 	t_list			*tmp2;
 
+	printf("t_list : %lu\n", sizeof(t_gnl));
 	tmp = list;
 	while (tmp != NULL && fd != ((t_gnl*)(tmp->content))->fd)
 		tmp = tmp->next;
@@ -83,9 +84,9 @@ int		get_next_line(const int fd, char **line)
 		while (tmp2 != tmp && tmp != tmp2->next)
 			tmp2 = tmp2->next;
 		tmp2->next = tmp->next;
-		ft_memdel((void**)(&(tmp->content)));
 		if (tmp2 == tmp)
-			list = NULL;
+			list = tmp->next;
+		ft_memdel((void**)(&(tmp->content)));
 		ft_memdel((void**)(&tmp));
 		return (stock);
 	}
