@@ -11,7 +11,6 @@
 /* ************************************************************************** */
 
 #include "get_next_line.h"
-#include <stdio.h>
 
 int		read_buffer(int fd, char **result)
 {
@@ -38,15 +37,38 @@ int		read_buffer(int fd, char **result)
 	return (1);
 }
 
-t_gnl	*createstruct(int fd)
+char	**backremain(int fd, t_list **tmp, t_list **list)
 {
 	t_gnl	*gnl;
+	t_list	*link;
 
-	gnl = (t_gnl*)malloc(sizeof(t_gnl));
-	gnl->fd = fd;
-	gnl->remain = NULL;
+	*tmp = *list;
+	while (*tmp != NULL && fd != ((t_gnl*)((*tmp)->content))->fd)
+		*tmp = (*tmp)->next;
+	if (*tmp == NULL)
+	{
+		gnl = (t_gnl*)malloc(sizeof(t_gnl));
+		link = ft_lstnew(&gnl, sizeof(t_gnl));
+		ft_lstadd(list, link);
+		*tmp = *list;
+		(((t_gnl *)((*tmp)->content))->fd) = fd;
+		(((t_gnl *)((*tmp)->content))->remain) = NULL;
+	}
+	return (&(((t_gnl *)((*tmp)->content))->remain));
+}
 
-	return (gnl);
+void	free_list(t_list **tmp, t_list **list)
+{
+	t_list		*tmp2;
+
+	tmp2 = *list;
+	while (tmp2 != *tmp && *tmp != tmp2->next)
+		tmp2 = tmp2->next;
+	tmp2->next = (*tmp)->next;
+	if (tmp2 == *tmp)
+		*list = (*tmp)->next;
+	ft_memdel((void**)(&((*tmp)->content)));
+	ft_memdel((void**)(tmp));
 }
 
 /*
@@ -64,30 +86,14 @@ int		get_next_line(const int fd, char **line)
 	char			*result;
 	static t_list	*list = NULL;
 	t_list			*tmp;
-	t_list			*tmp2;
+	char			**remain;
 
-	printf("t_list : %lu\n", sizeof(t_gnl));
-	tmp = list;
-	while (tmp != NULL && fd != ((t_gnl*)(tmp->content))->fd)
-		tmp = tmp->next;
-	if (tmp == NULL)
-	{
-		ft_lstadd(&list, ft_lstnew(createstruct(fd), sizeof(t_gnl)));
-		tmp = list;
-	}
-	result = (((t_gnl*)(tmp->content))->remain == NULL) ? ft_strnew(0) :
-			ft_strdup(((t_gnl*)(tmp->content))->remain);
-	ft_strdel((char**)&((t_gnl*)(tmp->content))->remain);
+	remain = backremain(fd, &tmp, &list);
+	result = (*remain == NULL) ? ft_strnew(0) : ft_strdup(*remain);
+	ft_strdel((char**)remain);
 	if ((stock = read_buffer(fd, &result)) != 1)
 	{
-		tmp2 = list;
-		while (tmp2 != tmp && tmp != tmp2->next)
-			tmp2 = tmp2->next;
-		tmp2->next = tmp->next;
-		if (tmp2 == tmp)
-			list = tmp->next;
-		ft_memdel((void**)(&(tmp->content)));
-		ft_memdel((void**)(&tmp));
+		free_list(&tmp, &list);
 		return (stock);
 	}
 	stock = 0;
@@ -95,7 +101,7 @@ int		get_next_line(const int fd, char **line)
 		stock++;
 	*line = ft_strsub(result, 0, stock);
 	if (result[stock] == '\n')
-		((t_gnl*)(tmp->content))->remain = ft_strdup(&result[stock + 1]);
+		*remain = ft_strdup(&result[stock + 1]);
 	ft_strdel((char**)&result);
 	return (1);
 }
