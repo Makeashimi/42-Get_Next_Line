@@ -73,8 +73,6 @@ void	free_list(t_list **tmp, t_list **list)
 /*
 ** stock = Contain the return value of read_buffer AND browse result.
 ** result = Result of buf and tmp->content->remain.
-** tmp->content->remain = Remain of the file after the \n from the content of
-** my list.
 ** stock + 1 = index / &ret + 1 = pointer starting at ret+1 to keep the string.
 ** sizeof(t_gnl) = int + char * = 12.
 */
@@ -89,7 +87,7 @@ int		get_next_line(const int fd, char **line)
 
 	remain = backremain(fd, &tmp, &list);
 	result = (*remain == NULL) ? ft_strnew(0) : ft_strdup(*remain);
-	ft_strdel((char**)remain);
+	ft_strdel(remain);
 	if ((stock = read_buffer(fd, &result)) != 1)
 	{
 		free_list(&tmp, &list);
