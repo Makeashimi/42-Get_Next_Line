@@ -50,7 +50,6 @@ char	**backremain(int fd, t_list **tmp, t_list **list)
 		link = ft_lstnew(&gnl, sizeof(t_gnl));
 		ft_lstadd(list, link);
 		*tmp = *list;
-		(*tmp)->content = (t_gnl*)malloc(sizeof(t_gnl));
 		(((t_gnl *)((*tmp)->content))->fd) = fd;
 		(((t_gnl *)((*tmp)->content))->remain) = NULL;
 	}
